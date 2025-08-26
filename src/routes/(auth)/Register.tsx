@@ -1,8 +1,8 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Sun, Moon, Phone, Lock, User, Mail, Key } from 'lucide-react';
+import { Eye, EyeOff, Phone, Lock, User, Key } from 'lucide-react';
 import { useTheme } from '@/utility/ThemeProvider';
 
 const RegisterPage = () => {
@@ -356,9 +356,9 @@ const RegisterPage = () => {
         >
           <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
             Already have an account?{' '}
-            <a href="/login" className={`font-medium hover:underline ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
+            <Link to="/Login" className={`font-medium hover:underline ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
               Sign in
-            </a>
+            </Link>
           </p>
         </motion.div>
       </motion.div>

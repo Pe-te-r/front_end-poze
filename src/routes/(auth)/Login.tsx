@@ -2,7 +2,7 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Eye, EyeOff, Sun, Moon, Phone, Lock } from 'lucide-react';
+import { Eye, EyeOff, Phone, Lock } from 'lucide-react';
 import { useTheme } from '@/utility/ThemeProvider';
 
 const LoginPage = () => {
