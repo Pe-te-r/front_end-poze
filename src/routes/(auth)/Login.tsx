@@ -1,12 +1,12 @@
 // routes/Login.tsx
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, Link } from '@tanstack/react-router'
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Sun, Moon, Phone, Lock } from 'lucide-react';
 import { useTheme } from '@/utility/ThemeProvider';
 
 const LoginPage = () => {
-  const { isDark, toggleTheme } = useTheme();
+  const { isDark } = useTheme();
   const [showPassword, setShowPassword] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
@@ -48,19 +48,6 @@ const LoginPage = () => {
         transition={{ duration: 0.5 }}
         className={`w-full max-w-md p-8 rounded-xl shadow-lg transition-colors duration-300 ${isDark ? 'bg-gray-800 text-white' : 'bg-white text-gray-800'}`}
       >
-        {/* Theme Toggle */}
-        <div className="flex justify-end mb-6">
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={toggleTheme}
-            className={`p-2 rounded-full ${isDark ? 'bg-yellow-400 text-gray-900' : 'bg-gray-800 text-yellow-400'}`}
-            aria-label="Toggle theme"
-          >
-            {isDark ? <Sun size={20} /> : <Moon size={20} />}
-          </motion.button>
-        </div>
-
         {/* Header */}
         <div className="text-center mb-8">
           <motion.h1 
@@ -194,9 +181,9 @@ const LoginPage = () => {
         >
           <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
             Don't have an account?{' '}
-            <a href="#" className={`font-medium hover:underline ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
+            <Link to="/Register" className={`font-medium hover:underline ${isDark ? 'text-blue-400' : 'text-blue-600'}`}>
               Sign up
-            </a>
+            </Link>
           </p>
         </motion.div>
       </motion.div>
