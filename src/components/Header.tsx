@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+// components/Header.tsx
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Home, 
@@ -13,25 +14,12 @@ import {
   LogIn,
   UserPlus
 } from 'lucide-react';
+import { useTheme } from '@/utility/ThemeProvider';
 
 const Header = () => {
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleTheme } = useTheme();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
-
-  // Toggle theme
-  const toggleTheme = () => {
-    setIsDark(!isDark);
-  };
-
-  // Apply theme class to body
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDark]);
 
   // Navigation items - easily customizable
   const navItems = [

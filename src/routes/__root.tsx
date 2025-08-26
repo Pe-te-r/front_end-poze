@@ -5,6 +5,7 @@ import { TanstackDevtools } from '@tanstack/react-devtools'
 import Header from '../components/Header'
 
 import appCss from '../styles.css?url'
+import { ThemeProvider } from '@/utility/ThemeProvider'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -33,6 +34,8 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
+    <ThemeProvider> 
+
     <html lang="en">
       <head>
         <HeadContent />
@@ -54,5 +57,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <Scripts />
       </body>
     </html>
+    </ThemeProvider>
   )
 }

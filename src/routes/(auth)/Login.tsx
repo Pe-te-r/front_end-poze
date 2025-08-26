@@ -1,28 +1,15 @@
+// routes/Login.tsx
 import { createFileRoute } from '@tanstack/react-router'
-
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Sun, Moon, Phone, Lock } from 'lucide-react';
+import { useTheme } from '@/utility/ThemeProvider';
 
 const LoginPage = () => {
-  const [isDark, setIsDark] = useState(false);
+  const { isDark, toggleTheme } = useTheme();
   const [showPassword, setShowPassword] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
-
-  // Toggle theme
-  const toggleTheme = () => {
-    setIsDark(!isDark);
-  };
-
-  // Apply theme class to body
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDark]);
 
   // Handle form submission
   const handleSubmit = (e: any) => {
@@ -217,8 +204,6 @@ const LoginPage = () => {
   );
 };
 
-
 export const Route = createFileRoute('/(auth)/Login')({
   component: LoginPage,
 })
-
