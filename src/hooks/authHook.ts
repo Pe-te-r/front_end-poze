@@ -75,7 +75,7 @@ export const useLogin = () => {
       // Store token in localStorage
       if(data.data)loginUserState({role: data.data.role,userId:data.data.userId,tokens:data.data?.tokens})
       toast.success(data.message);
-      navigate({to:'/'});
+      navigate({to:'/dashboard'});
 
       // Update auth token in fetchAPI instance
       fetchAPI.setAuthToken(data.data?.tokens?.access || '');

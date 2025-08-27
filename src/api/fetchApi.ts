@@ -1,3 +1,4 @@
+
 // utils/FetchAPI.ts
 class FetchAPI {
   private baseURL: string;
@@ -175,10 +176,6 @@ export const fetchAPI = new FetchAPI(
   process.env.REACT_APP_API_URL || 'http://localhost:3000'
 );
 
-// Initialize with token from localStorage if available
-const token = localStorage.getItem('authToken');
-if (token) {
-  fetchAPI.setAuthToken(token);
-}
+
 
 export default FetchAPI;

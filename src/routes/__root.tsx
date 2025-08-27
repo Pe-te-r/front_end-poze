@@ -8,6 +8,9 @@ import appCss from '../styles.css?url'
 import { ThemeProvider } from '@/utility/ThemeProvider'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeAwareToaster } from '@/components/ThemeToaster'
+import { useAuthStore } from '@/store/authStore'
+import { fetchAPI } from '@/api/fetchApi'
+import { useEffect } from 'react'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -35,6 +38,10 @@ export const Route = createRootRoute({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const {data}= useAuthStore()
+  useEffect(()=>{
+    if(data?.tokens.access)fetchAPI.setAuthToken(data.tokens.access)
+  },[])
   const queryClient = new QueryClient({
   defaultOptions: {
     queries: {

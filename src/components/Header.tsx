@@ -12,12 +12,17 @@ import {
   Menu, 
   X,
   LogIn,
-  UserPlus
+  UserPlus,
+  LayoutDashboard,
+  LogOut
 } from 'lucide-react';
 import { useTheme } from '@/utility/ThemeProvider';
+import { useAuthStore } from '@/store/authStore';
+import { Link } from '@tanstack/react-router';
 
 const Header = () => {
   const { isDark, toggleTheme } = useTheme();
+  const { data, isAuthenticated, logoutUserState } = useAuthStore();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
 
@@ -30,11 +35,30 @@ const Header = () => {
     { name: 'Profile', path: '/profile', icon: <User size={18} /> },
   ];
 
-  // Account dropdown items
-  const accountItems = [
+  // Account dropdown items for authenticated users
+  const authenticatedAccountItems = [
+    { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={16} /> },
+    { name: 'Profile', path: '/profile', icon: <User size={16} /> },
+    { 
+      name: 'Logout', 
+      action: () => {
+        logoutUserState();
+        setIsAccountDropdownOpen(false);
+      }, 
+      icon: <LogOut size={16} /> 
+    },
+  ];
+
+  // Account dropdown items for unauthenticated users
+  const unauthenticatedAccountItems = [
     { name: 'Login', path: '/login', icon: <LogIn size={16} /> },
     { name: 'Register', path: '/register', icon: <UserPlus size={16} /> },
   ];
+
+  const handleLogout = () => {
+    logoutUserState();
+    setIsAccountDropdownOpen(false);
+  };
 
   return (
     <header className={`sticky top-0 z-50 transition-colors duration-300 ${isDark ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'} shadow-md`}>
@@ -54,18 +78,15 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-1">
-            {navItems.map((item, index) => (
-              <motion.a
+            {navItems.map((item) => (
+              <Link
                 key={item.name}
-                href={item.path}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
+                to={item.path}
                 className={`flex items-center space-x-1 px-3 py-2 rounded-md transition-colors duration-300 ${isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`}
               >
                 {item.icon}
                 <span>{item.name}</span>
-              </motion.a>
+              </Link>
             ))}
           </nav>
 
@@ -82,41 +103,76 @@ const Header = () => {
               {isDark ? <Sun size={20} /> : <Moon size={20} />}
             </motion.button>
 
-            {/* Account Dropdown */}
-            <div className="relative hidden md:block">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => setIsAccountDropdownOpen(!isAccountDropdownOpen)}
-                className={`flex items-center space-x-1 p-2 rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}
-                aria-label="Account options"
-              >
-                <User size={20} />
-              </motion.button>
+            {/* Account Dropdown - Only show if user is authenticated */}
+            {isAuthenticated && (
+              <div className="relative hidden md:block">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setIsAccountDropdownOpen(!isAccountDropdownOpen)}
+                  className={`flex items-center space-x-2 p-2 rounded-md ${isDark ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300'} transition-colors`}
+                  aria-label="Account options"
+                >
+                  <User size={20} />
+                  <span className="text-sm font-medium">
+                    {data?.userId ? `User #${data.userId.slice(-4)}` : 'Account'}
+                  </span>
+                </motion.button>
 
-              <AnimatePresence>
-                {isAccountDropdownOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    transition={{ duration: 0.2 }}
-                    className={`absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 ${isDark ? 'bg-gray-800' : 'bg-white'} ring-1 ring-black ring-opacity-5`}
-                  >
-                    {accountItems.map((item) => (
-                      <a
-                        key={item.name}
-                        href={item.path}
-                        className={`flex items-center space-x-2 px-4 py-2 text-sm ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
-                      >
-                        {item.icon}
-                        <span>{item.name}</span>
-                      </a>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+                <AnimatePresence>
+                  {isAccountDropdownOpen && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      transition={{ duration: 0.2 }}
+                      className={`absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 ${isDark ? 'bg-gray-800' : 'bg-white'} ring-1 ring-black ring-opacity-5`}
+                    >
+                      {authenticatedAccountItems.map((item) => (
+                        <div key={item.name}>
+                          {item.path ? (
+                            <Link
+                              to={item.path}
+                              className={`flex items-center space-x-2 px-4 py-2 text-sm ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                              onClick={() => setIsAccountDropdownOpen(false)}
+                            >
+                              {item.icon}
+                              <span>{item.name}</span>
+                            </Link>
+                          ) : (
+                            <button
+                              onClick={item.action}
+                              className={`w-full text-left flex items-center space-x-2 px-4 py-2 text-sm ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                            >
+                              {item.icon}
+                              <span>{item.name}</span>
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
+
+            {/* Show login/register buttons if not authenticated */}
+            {!isAuthenticated && (
+              <div className="hidden md:flex items-center space-x-2">
+                <Link
+                  to="/Login"
+                  className={`px-4 py-2 rounded-md text-sm font-medium ${isDark ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/Register"
+                  className={`px-4 py-2 rounded-md text-sm font-medium ${isDark ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300'}`}
+                >
+                  Register
+                </Link>
+              </div>
+            )}
 
             {/* Mobile menu button */}
             <motion.button
@@ -143,28 +199,63 @@ const Header = () => {
             >
               <nav className="py-2">
                 {navItems.map((item) => (
-                  <a
+                  <Link
                     key={item.name}
-                    href={item.path}
+                    to={item.path}
                     className={`flex items-center space-x-2 px-4 py-3 ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}
+                    onClick={() => setIsMobileMenuOpen(false)}
                   >
                     {item.icon}
                     <span>{item.name}</span>
-                  </a>
+                  </Link>
                 ))}
 
                 {/* Account options in mobile menu */}
                 <div className="border-t mt-2 pt-2">
-                  {accountItems.map((item) => (
-                    <a
-                      key={item.name}
-                      href={item.path}
-                      className={`flex items-center space-x-2 px-4 py-3 ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}
-                    >
-                      {item.icon}
-                      <span>{item.name}</span>
-                    </a>
-                  ))}
+                  {isAuthenticated ? (
+                    <>
+                      <div className="px-4 py-2 text-sm font-medium text-gray-500">
+                        Logged in as User #{data?.userId?.slice(-4)}
+                      </div>
+                      {authenticatedAccountItems.map((item) => (
+                        <div key={item.name}>
+                          {item.path ? (
+                            <Link
+                              to={item.path}
+                              className={`flex items-center space-x-2 px-4 py-3 ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}
+                              onClick={() => setIsMobileMenuOpen(false)}
+                            >
+                              {item.icon}
+                              <span>{item.name}</span>
+                            </Link>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                item.action?.();
+                                setIsMobileMenuOpen(false);
+                              }}
+                              className={`w-full text-left flex items-center space-x-2 px-4 py-3 ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}
+                            >
+                              {item.icon}
+                              <span>{item.name}</span>
+                            </button>
+                          )}
+                        </div>
+                      ))}
+                    </>
+                  ) : (
+                    unauthenticatedAccountItems.map((item) => (
+                      <Link
+                        key={item.name}
+                        to={item.path}
+                        className={`flex items-center space-x-2 px-4 py-3 ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        {item.icon}
+                        <span>{item.name}</span>
+                      </Link>
+                    ))
+                  )}
                 </div>
               </nav>
             </motion.div>
