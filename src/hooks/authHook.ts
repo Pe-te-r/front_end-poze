@@ -71,8 +71,7 @@ export const useLogin = () => {
       if (!data) {
         const noDataError = 'No data received';
         toast.error(noDataError);
-        return Promise.reject(new Error(noDataError));      }
-
+        return Promise.reject(new Error(noDataError));
       }
 
       return data;
