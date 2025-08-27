@@ -64,12 +64,15 @@ export const useLogin = () => {
       console.log('data from login',data,error,status)
 
       if (error) {
-        throw new Error(error);
-
+        toast.error(error);
+        return Promise.reject(new Error(error));
       }
 
       if (!data) {
-        throw new Error('No data received');
+        const noDataError = 'No data received';
+        toast.error(noDataError);
+        return Promise.reject(new Error(noDataError));      }
+
       }
 
       return data;
