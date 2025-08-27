@@ -6,6 +6,7 @@ import Header from '../components/Header'
 
 import appCss from '../styles.css?url'
 import { ThemeProvider } from '@/utility/ThemeProvider'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -33,7 +34,16 @@ export const Route = createRootRoute({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+})
   return (
+    <QueryClientProvider client={queryClient}>
     <ThemeProvider> 
 
     <html lang="en">
@@ -58,5 +68,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </body>
     </html>
     </ThemeProvider>
+    </QueryClientProvider>
   )
 }

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Phone, Lock } from 'lucide-react';
 import { useTheme } from '@/utility/ThemeProvider';
+import { useLogin } from '@/hooks/authHook';
 
 const LoginPage = () => {
   const { isDark } = useTheme();
@@ -11,10 +12,13 @@ const LoginPage = () => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
 
+  const loginMutate = useLogin()
+
   // Handle form submission
   const handleSubmit = (e: any) => {
     e.preventDefault();
     console.log('Login attempted with:', { phoneNumber, password });
+    loginMutate.mutate({phone:phoneNumber,password})
     // Here you would typically integrate with your API
   };
 

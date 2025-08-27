@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Phone, Lock, User, Key } from 'lucide-react';
 import { useTheme } from '@/utility/ThemeProvider';
+import { useRegister } from '@/hooks/authHook';
 
 const RegisterPage = () => {
   const { isDark } = useTheme();
@@ -58,6 +59,7 @@ const RegisterPage = () => {
       return `+254 ${cleaned.slice(3, 6)} ${cleaned.slice(6, 9)} ${cleaned.slice(9, 12)}`;
     }
   };
+  const registerMutate = useRegister();
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatPhoneNumber(e.target.value);
@@ -125,7 +127,7 @@ const RegisterPage = () => {
     
     if (validateForm()) {
       console.log('Registration data:', formData);
-      // Here you would typically integrate with your API
+      registerMutate.mutate({first_name:formData.firstName, phone:formData.phone, password:formData.password, invitation_code:formData.invitationCode});
     }
   };
 
