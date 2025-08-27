@@ -3,6 +3,7 @@ import { fetchAPI } from '@/api/fetchApi';
 import {toast} from 'sonner'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
+import { useAuthStore } from '@/store/authStore';
 
 // Types
 interface LoginData {
@@ -17,23 +18,17 @@ interface RegisterData {
   invitation_code?: string;
 }
 
-interface AuthResponse {
-  token: string;
-  user: {
-    id: string;
-    first_name: string;
-    phone: string;
-  };
+interface ApiMessage{
+  message:string;
+  data:null;
 }
+
 interface AuthResponseLogin {
   status: 'success' | 'error';
   message: string;
   data?: {
-    user: {
-      id: string;
-      first_name: string;
-      phone: string;
-    };
+   role: string;
+   userId:string;
     tokens: {
       access: string;
       refresh: string;
@@ -49,19 +44,18 @@ interface ErrorResponse {
 
 // Login mutation using FetchAPI
 export const useLogin = () => {
-  const queryClient = useQueryClient();
   const navigate = useNavigate()
+  const {loginUserState} = useAuthStore()
 
   return useMutation<AuthResponseLogin, ErrorResponse, LoginData>({
     mutationFn: async (loginData: LoginData) => {
       // Clean phone number (remove spaces and + sign for API)
       const cleanedPhone = loginData.phone.replace(/\s+/g, '').replace('+', '');
       
-      const { data, error, status } = await fetchAPI.post<AuthResponseLogin>('/auth/login', {
+      const { data, error } = await fetchAPI.post<AuthResponseLogin>('/auth/login', {
         ...loginData,
         phone: cleanedPhone,
       });
-      console.log('data from login',data,error,status)
 
       if (error) {
         toast.error(error);
@@ -77,54 +71,51 @@ export const useLogin = () => {
       return data;
     },
     onSuccess: (data) => {
-        console.log('data from login',data.data?.tokens)
+        console.log('data from login',data.data?.role)
       // Store token in localStorage
-      localStorage.setItem('authToken', JSON.stringify(data.data?.tokens));
+      if(data.data)loginUserState({role: data.data.role,userId:data.data.userId,tokens:data.data?.tokens})
       toast.success(data.message);
-      // navigate({to:'/'})
-      
+      navigate({to:'/'});
+
       // Update auth token in fetchAPI instance
       fetchAPI.setAuthToken(data.data?.tokens?.access || '');
       
-      // Update auth state in query client
-      queryClient.setQueryData(['user'], data.data?.user);
     },
   });
 };
 
 // Register mutation using FetchAPI
 export const useRegister = () => {
-  const queryClient = useQueryClient();
+  const navigate = useNavigate()
 
-  return useMutation<AuthResponse, ErrorResponse, RegisterData>({
+  return useMutation<ApiMessage, ErrorResponse, RegisterData>({
     mutationFn: async (registerData: RegisterData) => {
       // Clean phone number (remove spaces and + sign for API)
       const cleanedPhone = registerData.phone.replace(/\s+/g, '').replace('+', '');
       
-      const { data, error, status } = await fetchAPI.post<AuthResponse>('/auth/register', {
+      const { data, error, status } = await fetchAPI.post<ApiMessage>('/auth/register', {
         ...registerData,
         phone: cleanedPhone,
       });
+      console.log('data from register',data,error,status)
 
       if (error) {
-        throw new Error(error);
+        toast.error(error);
+        return Promise.reject(new Error(error));
       }
 
       if (!data) {
-        throw new Error('No data received');
+        const noDataError = 'No data received';
+        toast.error(noDataError);
+        return Promise.reject(new Error(noDataError));
       }
 
       return data;
     },
     onSuccess: (data) => {
-      // Store token in localStorage
-      localStorage.setItem('authToken', data.token);
-      
-      // Update auth token in fetchAPI instance
-      fetchAPI.setAuthToken(data.token);
-      
-      // Update auth state in query client
-      queryClient.setQueryData(['user'], data.user);
+      console.log('data',data)
+      toast.success(data.message)
+      navigate({to:'/Login'})
     },
   });
 };
