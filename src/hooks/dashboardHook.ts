@@ -3,11 +3,12 @@ import { fetchAPI } from '@/api/fetchApi';
 import { DashboardResponse } from '@/types/dashboardType';
 import { useQuery } from '@tanstack/react-query';
 
-export const useDashboard = () => {
+export const useDashboard = (dashboardId: string) => {
   return useQuery<DashboardResponse, Error>({
-    queryKey: ['dashboard'],
+    queryKey: ['dashboard', dashboardId],
     queryFn: async () => {
-      const { data, error } = await fetchAPI.get<DashboardResponse>('/dashboard');
+      // Use the dashboardId in the endpoint
+      const { data, error } = await fetchAPI.get<DashboardResponse>(`/dashboard/${dashboardId}`);
       
       if (error) {
         throw new Error(error);
@@ -22,5 +23,7 @@ export const useDashboard = () => {
     retry: 1,
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
+    // Only enable the query if dashboardId is provided
+    enabled: !!dashboardId,
   });
 };

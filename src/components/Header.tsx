@@ -42,7 +42,8 @@ const Header = () => {
     { 
       name: 'Logout', 
       action: () => {
-        logoutUserState();
+        // logoutUserState();
+        handleLogout();
         setIsAccountDropdownOpen(false);
       }, 
       icon: <LogOut size={16} /> 
