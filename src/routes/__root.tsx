@@ -2,12 +2,12 @@ import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools'
 import { TanstackDevtools } from '@tanstack/react-devtools'
 import Header from '../components/Header'
-import { Toaster } from 'sonner'
 
 
 import appCss from '../styles.css?url'
-import { ThemeProvider, useTheme } from '@/utility/ThemeProvider'
+import { ThemeProvider } from '@/utility/ThemeProvider'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ThemeAwareToaster } from '@/components/ThemeToaster'
 
 export const Route = createRootRoute({
   head: () => ({
@@ -35,8 +35,6 @@ export const Route = createRootRoute({
 })
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const {isDark} = useTheme();
-  const theme = isDark ? 'dark' : 'light';
   const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -54,12 +52,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-    <Toaster
-              theme={theme}
-              position="top-right"
-              richColors 
-              closeButton
-            />
+    <ThemeAwareToaster/>
         <Header />
         {children}
         <TanstackDevtools
