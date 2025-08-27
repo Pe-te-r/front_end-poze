@@ -1,5 +1,6 @@
 // hooks/useAuthFetch.ts
 import { fetchAPI } from '@/api/fetchApi';
+import {toast} from 'sonner'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 // Types
@@ -57,6 +58,7 @@ export const useLogin = () => {
         console.log('data from login',data)
       // Store token in localStorage
       localStorage.setItem('authToken', data.token);
+      toast.success('Login successful!');
       
       // Update auth token in fetchAPI instance
       fetchAPI.setAuthToken(data.token);
