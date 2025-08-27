@@ -16,9 +16,11 @@ const LoginPage = () => {
 
   // Handle form submission
   const handleSubmit = (e: any) => {
-    e.preventDefault();
-    console.log('Login attempted with:', { phoneNumber, password });
-    loginMutate.mutate({phone:phoneNumber,password})
+      e.preventDefault();
+      console.log('Login attempted with:', { phoneNumber, password });
+      loginMutate.mutate({phone:phoneNumber,password})
+      
+ 
     // Here you would typically integrate with your API
   };
 

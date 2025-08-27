@@ -2,6 +2,7 @@
 import { fetchAPI } from '@/api/fetchApi';
 import {toast} from 'sonner'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from '@tanstack/react-router';
 
 // Types
 interface LoginData {
@@ -24,6 +25,22 @@ interface AuthResponse {
     phone: string;
   };
 }
+interface AuthResponseLogin {
+  status: 'success' | 'error';
+  message: string;
+  data?: {
+    user: {
+      id: string;
+      first_name: string;
+      phone: string;
+    };
+    tokens: {
+      access: string;
+      refresh: string;
+    };
+  }
+}
+
 
 interface ErrorResponse {
   message: string;
@@ -33,19 +50,22 @@ interface ErrorResponse {
 // Login mutation using FetchAPI
 export const useLogin = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate()
 
-  return useMutation<AuthResponse, ErrorResponse, LoginData>({
+  return useMutation<AuthResponseLogin, ErrorResponse, LoginData>({
     mutationFn: async (loginData: LoginData) => {
       // Clean phone number (remove spaces and + sign for API)
       const cleanedPhone = loginData.phone.replace(/\s+/g, '').replace('+', '');
       
-      const { data, error, status } = await fetchAPI.post<AuthResponse>('/auth/login', {
+      const { data, error, status } = await fetchAPI.post<AuthResponseLogin>('/auth/login', {
         ...loginData,
         phone: cleanedPhone,
       });
+      console.log('data from login',data,error,status)
 
       if (error) {
         throw new Error(error);
+
       }
 
       if (!data) {
@@ -55,16 +75,17 @@ export const useLogin = () => {
       return data;
     },
     onSuccess: (data) => {
-        console.log('data from login',data)
+        console.log('data from login',data.data?.tokens)
       // Store token in localStorage
-      localStorage.setItem('authToken', data.token);
-      toast.success('Login successful!');
+      localStorage.setItem('authToken', JSON.stringify(data.data?.tokens));
+      toast.success(data.message);
+      // navigate({to:'/'})
       
       // Update auth token in fetchAPI instance
-      fetchAPI.setAuthToken(data.token);
+      fetchAPI.setAuthToken(data.data?.tokens?.access || '');
       
       // Update auth state in query client
-      queryClient.setQueryData(['user'], data.user);
+      queryClient.setQueryData(['user'], data.data?.user);
     },
   });
 };
