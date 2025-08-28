@@ -18,7 +18,7 @@ export const userAdminQuery = ()=>{
     })
 }
 
-export const changeUserStatusMutation = async()=>{
+export const changeUserStatusMutation = () => {
     return useMutation<{
         message: string
     }, Error, { userId: string, newStatus: "active" | "suspended" }>({
