@@ -38,9 +38,6 @@ export const changeUserStatusMutation = () => {
         onSuccess: (data)=>{
             toast.success(data.message)
         },
-        onError: (error: Error)=>{
-            toast.error(error.message)
-        },
         // Invalidate and refetch
         onSettled: ()=>{
             userAdminQuery().refetch()

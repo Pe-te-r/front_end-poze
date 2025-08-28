@@ -27,6 +27,8 @@ const AdminUsersPage = () => {
   const [showReferralModal, setShowReferralModal] = useState(false);
   
   const { data, isLoading, isError, refetch } = userAdminQuery();
+  const mutation = changeUserStatusMutation();
+
   
   // Filter users based on search and status filter
   const filteredUsers = useMemo(() => {
@@ -248,8 +250,8 @@ const AdminUsersPage = () => {
                           >
                             <Eye className="h-4 w-4" />
                           </button>
-                          
-                          <StatusToggleButton user={user} isDark={isDark} />
+
+                          <StatusToggleButton user={user} isDark={isDark} mutation={mutation} />
                         </div>
                       </td>
                     </motion.tr>
@@ -278,9 +280,7 @@ const AdminUsersPage = () => {
   );
 };
 
-const StatusToggleButton = ({ user, isDark }: { user: User; isDark: boolean }) => {
-  const mutation = changeUserStatusMutation();
-  
+const StatusToggleButton = ({ user, isDark ,mutation}: { user: User; isDark: boolean ,mutation: any}) => {
   const handleStatusChange = () => {
     const newStatus = user.status === 'active' ? 'suspended' : 'active';
     mutation.mutate({ userId: user.id, newStatus });
