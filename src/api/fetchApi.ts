@@ -173,7 +173,7 @@ class FetchAPI {
 
 // Create a singleton instance
 export const fetchAPI = new FetchAPI(
-  process.env.REACT_APP_API_URL || 'http://localhost:3000'
+  process.env.REACT_APP_API_URL || 'http://localhost:3001'
 );
 
 

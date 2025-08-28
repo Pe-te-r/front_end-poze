@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as DepositRouteImport } from './routes/deposit'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as authRegisterRouteImport } from './routes/(auth)/Register'
 import { Route as authLoginRouteImport } from './routes/(auth)/Login'
 
+const DepositRoute = DepositRouteImport.update({
+  id: '/deposit',
+  path: '/deposit',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -37,12 +43,14 @@ const authLoginRoute = authLoginRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/deposit': typeof DepositRoute
   '/Login': typeof authLoginRoute
   '/Register': typeof authRegisterRoute
   '/dashboard': typeof DashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/deposit': typeof DepositRoute
   '/Login': typeof authLoginRoute
   '/Register': typeof authRegisterRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -50,20 +58,28 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/deposit': typeof DepositRoute
   '/(auth)/Login': typeof authLoginRoute
   '/(auth)/Register': typeof authRegisterRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/Login' | '/Register' | '/dashboard'
+  fullPaths: '/' | '/deposit' | '/Login' | '/Register' | '/dashboard'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/Login' | '/Register' | '/dashboard'
-  id: '__root__' | '/' | '/(auth)/Login' | '/(auth)/Register' | '/dashboard/'
+  to: '/' | '/deposit' | '/Login' | '/Register' | '/dashboard'
+  id:
+    | '__root__'
+    | '/'
+    | '/deposit'
+    | '/(auth)/Login'
+    | '/(auth)/Register'
+    | '/dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  DepositRoute: typeof DepositRoute
   authLoginRoute: typeof authLoginRoute
   authRegisterRoute: typeof authRegisterRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
@@ -71,6 +87,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/deposit': {
+      id: '/deposit'
+      path: '/deposit'
+      fullPath: '/deposit'
+      preLoaderRoute: typeof DepositRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -104,6 +127,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  DepositRoute: DepositRoute,
   authLoginRoute: authLoginRoute,
   authRegisterRoute: authRegisterRoute,
   DashboardIndexRoute: DashboardIndexRoute,
