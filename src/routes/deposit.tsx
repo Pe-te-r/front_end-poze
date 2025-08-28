@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react';
-import { Sun, Moon, Copy, Send, Smartphone, CreditCard, Shield } from 'lucide-react';
+import {  Copy, Send, Smartphone, CreditCard, Shield } from 'lucide-react';
 import { useTheme } from '@/utility/ThemeProvider';
 
 const ManualDeposit = () => {

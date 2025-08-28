@@ -14,7 +14,9 @@ import {
   LogIn,
   UserPlus,
   LayoutDashboard,
-  LogOut
+  LogOut,
+  Wallet,
+  CreditCard
 } from 'lucide-react';
 import { useTheme } from '@/utility/ThemeProvider';
 import { useAuthStore } from '@/store/authStore';
@@ -32,18 +34,18 @@ const Header = () => {
     { name: 'Levels', path: '/levels', icon: <BarChart3 size={18} /> },
     { name: 'Team', path: '/team', icon: <Users size={18} /> },
     { name: 'Task', path: '/task', icon: <ClipboardList size={18} /> },
-    { name: 'Profile', path: '/profile', icon: <User size={18} /> },
   ];
 
   // Account dropdown items for authenticated users
   const authenticatedAccountItems = [
     { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard size={16} /> },
     { name: 'Profile', path: '/profile', icon: <User size={16} /> },
+    { name: 'Deposit', path: '/deposit', icon: <CreditCard size={16} /> },
+    { name: 'Withdraw', path: '/withdraw', icon: <Wallet size={16} /> },
     { 
       name: 'Logout', 
       action: () => {
-        // logoutUserState();
-        handleLogout();
+        logoutUserState();
         setIsAccountDropdownOpen(false);
       }, 
       icon: <LogOut size={16} /> 
@@ -56,13 +58,8 @@ const Header = () => {
     { name: 'Register', path: '/register', icon: <UserPlus size={16} /> },
   ];
 
-  const handleLogout = () => {
-    logoutUserState();
-    setIsAccountDropdownOpen(false);
-  };
-
   return (
-    <header className={`sticky top-0 z-50 transition-colors duration-300 ${isDark ? 'bg-gray-900 text-white' : 'bg-white text-gray-800'} shadow-md`}>
+    <header className={`sticky top-0 z-50 transition-colors duration-300 ${isDark ? 'bg-gray-900 text-white' : 'bg-yellow-400 text-yellow-900'} shadow-md`}>
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -71,7 +68,7 @@ const Header = () => {
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center space-x-2"
           >
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isDark ? 'bg-blue-600' : 'bg-blue-500'}`}>
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${isDark ? 'bg-yellow-500' : 'bg-yellow-600'}`}>
               <span className="text-white font-bold">L</span>
             </div>
             <span className="text-xl font-bold">Logo</span>
@@ -83,7 +80,7 @@ const Header = () => {
               <Link
                 key={item.name}
                 to={item.path}
-                className={`flex items-center space-x-1 px-3 py-2 rounded-md transition-colors duration-300 ${isDark ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`}
+                className={`flex items-center space-x-1 px-3 py-2 rounded-md transition-colors duration-300 ${isDark ? 'hover:bg-gray-800' : 'hover:bg-yellow-300'}`}
               >
                 {item.icon}
                 <span>{item.name}</span>
@@ -98,7 +95,7 @@ const Header = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={toggleTheme}
-              className={`p-2 rounded-full ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}
+              className={`p-2 rounded-full ${isDark ? 'bg-gray-700 hover:bg-gray-600' : 'bg-yellow-500 hover:bg-yellow-600'} transition-colors`}
               aria-label="Toggle theme"
             >
               {isDark ? <Sun size={20} /> : <Moon size={20} />}
@@ -111,7 +108,7 @@ const Header = () => {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setIsAccountDropdownOpen(!isAccountDropdownOpen)}
-                  className={`flex items-center space-x-2 p-2 rounded-md ${isDark ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300'} transition-colors`}
+                  className={`flex items-center space-x-2 p-2 rounded-md ${isDark ? 'bg-gray-700 hover:bg-gray-600' : 'bg-yellow-500 hover:bg-yellow-600'} transition-colors`}
                   aria-label="Account options"
                 >
                   <User size={20} />
@@ -134,7 +131,7 @@ const Header = () => {
                           {item.path ? (
                             <Link
                               to={item.path}
-                              className={`flex items-center space-x-2 px-4 py-2 text-sm ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                              className={`flex items-center space-x-2 px-4 py-2 text-sm ${isDark ? 'hover:bg-gray-700' : 'hover:bg-yellow-100'}`}
                               onClick={() => setIsAccountDropdownOpen(false)}
                             >
                               {item.icon}
@@ -143,7 +140,7 @@ const Header = () => {
                           ) : (
                             <button
                               onClick={item.action}
-                              className={`w-full text-left flex items-center space-x-2 px-4 py-2 text-sm ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+                              className={`w-full text-left flex items-center space-x-2 px-4 py-2 text-sm ${isDark ? 'hover:bg-gray-700' : 'hover:bg-yellow-100'}`}
                             >
                               {item.icon}
                               <span>{item.name}</span>
@@ -162,13 +159,13 @@ const Header = () => {
               <div className="hidden md:flex items-center space-x-2">
                 <Link
                   to="/Login"
-                  className={`px-4 py-2 rounded-md text-sm font-medium ${isDark ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white`}
+                  className={`px-4 py-2 rounded-md text-sm font-medium ${isDark ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-yellow-600 hover:bg-yellow-700'} text-white`}
                 >
                   Login
                 </Link>
                 <Link
-                  to="/Register"
-                  className={`px-4 py-2 rounded-md text-sm font-medium ${isDark ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300'}`}
+                  to="/Rgiegister"
+                  className={`px-4 py-2 rounded-md text-sm font-medium ${isDark ? 'bg-gray-700 hover:bg-gray-600' : 'bg-white hover:bg-yellow-100'} ${isDark ? 'text-white' : 'text-yellow-900'}`}
                 >
                   Register
                 </Link>
@@ -180,7 +177,7 @@ const Header = () => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className={`p-2 rounded-full md:hidden ${isDark ? 'bg-gray-700' : 'bg-gray-200'}`}
+              className={`p-2 rounded-full md:hidden ${isDark ? 'bg-gray-700' : 'bg-yellow-500'}`}
               aria-label="Toggle menu"
             >
               {isMobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -196,14 +193,14 @@ const Header = () => {
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.3 }}
-              className={`mt-4 md:hidden ${isDark ? 'bg-gray-800' : 'bg-gray-100'} rounded-lg overflow-hidden`}
+              className={`mt-4 md:hidden ${isDark ? 'bg-gray-800' : 'bg-yellow-100'} rounded-lg overflow-hidden`}
             >
               <nav className="py-2">
                 {navItems.map((item) => (
                   <Link
                     key={item.name}
                     to={item.path}
-                    className={`flex items-center space-x-2 px-4 py-3 ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}
+                    className={`flex items-center space-x-2 px-4 py-3 ${isDark ? 'hover:bg-gray-700' : 'hover:bg-yellow-200'}`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     {item.icon}
@@ -215,7 +212,7 @@ const Header = () => {
                 <div className="border-t mt-2 pt-2">
                   {isAuthenticated ? (
                     <>
-                      <div className="px-4 py-2 text-sm font-medium text-gray-500">
+                      <div className={`px-4 py-2 text-sm font-medium ${isDark ? 'text-gray-300' : 'text-yellow-700'}`}>
                         Logged in as User #{data?.userId?.slice(-4)}
                       </div>
                       {authenticatedAccountItems.map((item) => (
@@ -223,7 +220,7 @@ const Header = () => {
                           {item.path ? (
                             <Link
                               to={item.path}
-                              className={`flex items-center space-x-2 px-4 py-3 ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}
+                              className={`flex items-center space-x-2 px-4 py-3 ${isDark ? 'hover:bg-gray-700' : 'hover:bg-yellow-200'}`}
                               onClick={() => setIsMobileMenuOpen(false)}
                             >
                               {item.icon}
@@ -235,7 +232,7 @@ const Header = () => {
                                 item.action?.();
                                 setIsMobileMenuOpen(false);
                               }}
-                              className={`w-full text-left flex items-center space-x-2 px-4 py-3 ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}
+                              className={`w-full text-left flex items-center space-x-2 px-4 py-3 ${isDark ? 'hover:bg-gray-700' : 'hover:bg-yellow-200'}`}
                             >
                               {item.icon}
                               <span>{item.name}</span>
@@ -249,7 +246,7 @@ const Header = () => {
                       <Link
                         key={item.name}
                         to={item.path}
-                        className={`flex items-center space-x-2 px-4 py-3 ${isDark ? 'hover:bg-gray-700' : 'hover:bg-gray-200'}`}
+                        className={`flex items-center space-x-2 px-4 py-3 ${isDark ? 'hover:bg-gray-700' : 'hover:bg-yellow-200'}`}
                         onClick={() => setIsMobileMenuOpen(false)}
                       >
                         {item.icon}
