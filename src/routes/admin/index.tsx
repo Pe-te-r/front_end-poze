@@ -19,6 +19,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { changeUserStatusMutation, userAdminQuery } from '@/hooks/adminHook';
 
+
 const AdminUsersPage = () => {
   const { isDark } = useTheme();
   const [searchQuery, setSearchQuery] = useState('');
