@@ -54,7 +54,7 @@ const ManualDeposit = () => {
               
               <div className={`p-4 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-yellow-100'}`}>
                 <h3 className="font-medium mb-2">2. Send via M-Pesa</h3>
-                <p>Go to M-Pesa on your phone, select "Paybill", enter the business number <strong>790000</strong>, and complete the payment.</p>
+                <p>Go to M-Pesa on your phone, select "Send Money", enter the phone number <strong>+254700000000</strong>, and complete the payment.</p>
               </div>
               
               <div className={`p-4 rounded-lg ${isDark ? 'bg-gray-700' : 'bg-yellow-100'}`}>

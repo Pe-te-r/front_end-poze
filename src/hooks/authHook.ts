@@ -37,7 +37,7 @@ interface AuthResponseLogin {
 }
 
 
-interface ErrorResponse {
+export interface ErrorResponse {
   message: string;
   errors?: Record<string, string[]>;
 }
