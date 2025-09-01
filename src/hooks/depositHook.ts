@@ -8,7 +8,8 @@ interface DepositHookResponse {
     data: null;
 }
 interface DepositHookVariables {
-    transaction_id: string;
+    reference: string;
+    userId: string;
 }
 
 export const depositHook = () => {

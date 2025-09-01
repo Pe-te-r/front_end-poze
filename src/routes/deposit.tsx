@@ -2,17 +2,21 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react';
 import {  Copy, Send, Smartphone, CreditCard, Shield } from 'lucide-react';
 import { useTheme } from '@/utility/ThemeProvider';
+import { depositHook } from '@/hooks/depositHook';
+import { useAuthStore } from '@/store/authStore';
 
 const ManualDeposit = () => {
     const { isDark } = useTheme();
   
   const [transactionId, setTransactionId] = useState('');
   
-  
+  const depositMutation = depositHook();
+  const  {data}= useAuthStore()
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     console.log({ payment_id: transactionId });
+    depositMutation.mutate({ reference: transactionId, userId: data?.userId! });
     // Here you would typically forward to backend
     setTransactionId('');
   };
