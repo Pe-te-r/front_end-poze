@@ -1,5 +1,5 @@
 import { fetchAPI } from "@/api/fetchApi";
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { ErrorResponse } from "./authHook";
 import { toast } from "sonner";
 
@@ -46,3 +46,28 @@ export const depositHook = () => {
         }
     });
 }
+
+export const useDepositQuery = (options?: { status?: string }) => {
+    // Set default status to 'pending' if not provided
+    const status = options?.status || 'pending';
+    
+    return useQuery({
+        queryKey: ['deposit', status], // Include status in query key for proper caching
+        queryFn: async () => {
+            const url = status ? `/transactions/deposit?status=${status}` : '/transactions/deposit';
+
+            const { data, error } = await fetchAPI.get<DepositHookResponse>(url);
+
+            if (error) {
+                return Promise.reject(new Error(error));
+            }
+
+            if (!data) {
+                return Promise.reject(new Error('No data received from deposit query'));
+            }
+
+            return data;
+        },
+        enabled: false, // Keep it disabled by default if that's your requirement
+    });
+};
