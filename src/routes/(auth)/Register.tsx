@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
-
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Eye, EyeOff, Phone, Lock, User, Key } from 'lucide-react';
@@ -45,20 +44,50 @@ const RegisterPage = () => {
     }
   };
 
-  // Format Kenyan phone number
+  // Format Kenyan phone number for display
   const formatPhoneNumber = (value: string) => {
+    // Remove all non-digit characters
     const cleaned = value.replace(/\D/g, '');
     
-    if (cleaned.length <= 3) {
-      return cleaned;
-    } else if (cleaned.length <= 6) {
-      return `+254 ${cleaned.slice(3)}`;
-    } else if (cleaned.length <= 9) {
-      return `+254 ${cleaned.slice(3, 6)} ${cleaned.slice(6)}`;
+    // Check if it starts with 0 and convert to 254
+    let formatted = cleaned;
+    if (cleaned.startsWith('0')) {
+      formatted = '254' + cleaned.substring(1);
+    } else if (cleaned.startsWith('+254')) {
+      formatted = cleaned.substring(1); // Remove the +
+    }
+    
+    // Format for display: +254 XXX XXX XXX
+    if (formatted.length <= 3) {
+      return formatted;
+    } else if (formatted.length <= 6) {
+      return `+254 ${formatted.slice(3)}`;
+    } else if (formatted.length <= 9) {
+      return `+254 ${formatted.slice(3, 6)} ${formatted.slice(6)}`;
     } else {
-      return `+254 ${cleaned.slice(3, 6)} ${cleaned.slice(6, 9)} ${cleaned.slice(9, 12)}`;
+      return `+254 ${formatted.slice(3, 6)} ${formatted.slice(6, 9)} ${formatted.slice(9, 12)}`;
     }
   };
+
+  // Process phone number for backend (remove formatting, ensure it starts with 254)
+  const processPhoneForBackend = (phone: string): string => {
+    // Remove all non-digit characters
+    const cleaned = phone.replace(/\D/g, '');
+    
+    // Convert to 254 format if it starts with 0
+    if (cleaned.startsWith('0')) {
+      return '254' + cleaned.substring(1);
+    } 
+    // Ensure it starts with 254 (not +254)
+    else if (cleaned.startsWith('254')) {
+      return cleaned;
+    }
+    // If it's already in the correct format with country code but without +
+    else {
+      return cleaned;
+    }
+  };
+
   const registerMutate = useRegister();
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,13 +116,17 @@ const RegisterPage = () => {
       isValid = false;
     }
 
-    // Phone validation
+    // Phone validation - check if it's a valid Kenyan number
     if (!formData.phone.trim()) {
       newErrors.phone = 'Phone number is required';
       isValid = false;
-    } else if (!/^\+254 \d{3} \d{3} \d{3}$/.test(formData.phone)) {
-      newErrors.phone = 'Please enter a valid Kenyan phone number';
-      isValid = false;
+    } else {
+      // Check if it's a valid Kenyan phone number (10 digits after formatting)
+      const digitsOnly = formData.phone.replace(/\D/g, '');
+      if (!digitsOnly.startsWith('254') || digitsOnly.length !== 12) {
+        newErrors.phone = 'Please enter a valid Kenyan phone number';
+        isValid = false;
+      }
     }
 
     // Password validation
@@ -111,11 +144,7 @@ const RegisterPage = () => {
       isValid = false;
     }
 
-    // Invitation code validation
-    if (!formData.invitationCode.trim()) {
-      newErrors.invitationCode = 'Invitation code is required';
-      isValid = false;
-    }
+    // Invitation code is now optional, so no validation needed
 
     setErrors(newErrors);
     return isValid;
@@ -126,8 +155,19 @@ const RegisterPage = () => {
     e.preventDefault();
     
     if (validateForm()) {
-      console.log('Registration data:', formData);
-      registerMutate.mutate({first_name:formData.firstName, phone:formData.phone, password:formData.password, invitation_code:formData.invitationCode});
+      // Process phone number for backend (remove + and formatting)
+      const processedPhone = processPhoneForBackend(formData.phone);
+      
+      // Prepare data for submission
+      const submissionData = {
+        first_name: formData.firstName,
+        phone: processedPhone,
+        password: formData.password,
+        invitation_code: formData.invitationCode.trim() || undefined // Send undefined if empty
+      };
+      
+      console.log('Registration data:', submissionData);
+      registerMutate.mutate(submissionData);
     }
   };
 
@@ -209,7 +249,7 @@ const RegisterPage = () => {
                 id="phone"
                 name="phone"
                 type="tel"
-                placeholder="+254 XXX XXX XXX"
+                placeholder="07XX XXX XXX or 2547XX XXX XXX"
                 value={formData.phone}
                 onChange={handlePhoneChange}
                 className={`block w-full pl-10 pr-3 py-3 border-0 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors duration-300 ${isDark ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-800'} ${errors.phone ? 'ring-2 ring-red-500' : ''}`}
@@ -219,6 +259,9 @@ const RegisterPage = () => {
             {errors.phone && (
               <p className="text-red-500 text-xs mt-1">{errors.phone}</p>
             )}
+            <p className="text-xs text-gray-500 mt-1">
+              Enter your Kenyan phone number (starting with 07 or 254)
+            </p>
           </motion.div>
 
           {/* Password Field */}
@@ -311,7 +354,7 @@ const RegisterPage = () => {
             className="space-y-2"
           >
             <label htmlFor="invitationCode" className="block text-sm font-medium">
-              Invitation Code
+              Invitation Code (Optional)
             </label>
             <div className={`relative rounded-md shadow-sm ${isDark ? 'bg-gray-700' : 'bg-gray-100'}`}>
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -321,11 +364,10 @@ const RegisterPage = () => {
                 id="invitationCode"
                 name="invitationCode"
                 type="text"
-                placeholder="Enter your invitation code"
+                placeholder="Enter invitation code (if any)"
                 value={formData.invitationCode}
                 onChange={handleInputChange}
-                className={`block w-full pl-10 pr-3 py-3 border-0 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors duration-300 ${isDark ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-800'} ${errors.invitationCode ? 'ring-2 ring-red-500' : ''}`}
-                required
+                className={`block w-full pl-10 pr-3 py-3 border-0 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none transition-colors duration-300 ${isDark ? 'bg-gray-700 text-white' : 'bg-gray-100 text-gray-800'}`}
               />
             </div>
             {errors.invitationCode && (
@@ -368,8 +410,6 @@ const RegisterPage = () => {
   );
 };
 
-
 export const Route = createFileRoute('/(auth)/Register')({
   component: RegisterPage,
 })
-
